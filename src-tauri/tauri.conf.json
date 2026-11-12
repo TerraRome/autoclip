@@ -99,7 +99,7 @@
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDlENzFDRkQ0OTZDRTMzRDIKUldUU004NlcxTTl4bldZcjJsNFhjMk9TTjFNWnhPc2s5c3lOQTVTcExpUkJDTUhrcmpwc2dadlIK",
       "endpoints": [
-        "https://github.com/zhouxiaoka/autoclip/releases/latest/download/latest.json"
+        "https://github.com/TerraRome/autoclip/releases/latest/download/latest.json"
       ],
       "windows": {
         "installMode": "passive"
