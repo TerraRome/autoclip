@@ -94,7 +94,7 @@ export function safeStudioProperties(value: Record<string, unknown> | null = {})
     failure_reason: ['none', 'capture', 'encode', 'runtime', 'timeout', 'unknown'],
     os: ['macos', 'windows', 'linux', 'unknown'],
     stage: ['pre_import', 'results_chip', 'editor'],
-    packaging_style: ['classic', 'boxed', 'spotlight', 'pop', 'cinematic'],
+    packaging_style: ['classic', 'boxed', 'spotlight', 'pop', 'cinematic', 'clipper'],
     framing: ['speaker', 'full_frame', 'full_frame_pending', 'full_frame_captions'],
     qa_checker: ['avsync', 'face', 'loudness', 'jitter', 'ending'],
     qa_outcome: ['pass', 'fail', 'skip'],

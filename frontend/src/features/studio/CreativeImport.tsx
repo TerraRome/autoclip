@@ -25,6 +25,7 @@ import { hasSuccessHistory, readRememberedPlatforms, resolvePlatforms, samePlatf
 import { claimBackgroundWhisperInstall, importUrlKind, isVideoFile, shouldArmAutostart, shouldAutoStart, shouldBackgroundInstallWhisper, UNDO_MS } from './pasteStart'
 import { readImportPreferences } from './importPreferencesStore'
 import ViralMomentsPanel from './ViralMomentsPanel'
+import ViralScanPanel from '../clipper/ViralScanPanel'
 import { GAMING_PLATFORMS, gamingOptions, generalOptions, readPreset, writePreset, type ProductionPreset } from './gamingPreset'
 import TranscriptionGatePrompt from './TranscriptionGatePrompt'
 import { isRecoveryCode, probeConfig, type RecoveryController } from './transcriptionRecovery'
@@ -545,6 +546,7 @@ export default function CreativeImport({ onImported, blocked = false, onBlocked,
         {source==='link'?<label className="studio-field"><span className="studio-sr">{t("视频链接")}</span><textarea placeholder={t("粘贴 B 站或 YouTube 视频链接")} value={url} onChange={e=>{ setPending(null); clearPreview(); setUrl(e.target.value) }} onBlur={e => { const value = e.target.value.trim(); if (importUrlKind(value)) void runInspect(value, 'blur') }} onPaste={event => { const text = event.clipboardData.getData('text'); if (importUrlKind(text) && shouldAutoStart(pasteFlag, 'paste')) { event.preventDefault(); arm('paste', { url: text.trim() }) } }} disabled={busy}/></label>:<label className="studio-file"><span>{file?.name || t("选择一段视频")}</span><input type="file" aria-label={t("视频文件")} accept="video/mp4,video/webm,video/quicktime,.mkv,.avi" disabled={busy} onChange={e=>{ const picked = e.target.files?.[0] || null; setFile(picked); if (picked) arm('drop', { file: picked }) }}/><small>MP4 / MOV / MKV / WEBM / AVI</small></label>}
       </>}
       {templatesOn && visualOn && platforms.some(platform => !['bilibili', 'youtube_long', 'original'].includes(platform)) && <StyleProbeLine sourceKey={source === 'file' ? (file ? `file:${file.name}:${file.size}:${file.lastModified}` : null) : (url.trim() ? `url:${url.trim()}` : null)} />}
+      {!dropZone && source === 'link' && <ViralScanPanel disabled={busy} onPick={picked => { setPending(null); clearPreview(); setFile(null); setUrl(picked) }}/>}
       {!file && importUrlKind(url) === 'youtube' && <ViralMomentsPanel url={url.trim()} browser={browser} platforms={platforms} options={options} disabled={busy} onImported={onImported}/>}
       <div className="studio-field ac-preset-row"><span>{t('制作预设')}</span><Segmented ariaLabel={t('制作预设')} size="sm" disabled={busy} value={preset} onChange={changePreset} options={[{value:'general',label:t('通用')},{value:'gaming',label:t('游戏 / 主播')}]}/>{preset === 'gaming' && <small>{t('精彩高光 · 竖屏 9:16 · 约 60 秒 · 带字幕，默认发到 TikTok 和 YouTube Shorts。在设置里选用多模态模型，AI 就能看画面，剪得更准。')}</small>}</div>
       {remembered ? <div className="ac-platform-line"><p>{t('为 {{names}} 制作', { names })}</p><button type="button" className="studio-link" disabled={busy} onClick={() => setPlatformOpen(open => !open)}>{t('改')}</button></div> : null}

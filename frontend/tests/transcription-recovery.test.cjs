@@ -1531,7 +1531,7 @@ function mount({ readiness, importImpl, dropZone = false, autostart = false, spe
     './platformLabel': { platformLabel: id => id },
     './platformMemory': { hasSuccessHistory: () => false, readRememberedPlatforms: () => null, resolvePlatforms: () => ({ platforms: ['douyin'], source: 'user' }), samePlatforms: () => true, takeReuseImport: () => null, writeRememberedPlatforms() {} },
     './pasteStart': { claimBackgroundWhisperInstall: () => false, importUrlKind: text => /^https:/.test(text || '') ? 'youtube' : null, isVideoFile: () => true, shouldArmAutostart: () => false, shouldAutoStart: () => false, shouldBackgroundInstallWhisper: () => false, UNDO_MS: 3000, ...pasteStart },
-    './importPreferencesStore': { readImportPreferences: () => null }, './gamingPreset': { GAMING_PLATFORMS: ['tiktok', 'youtube_shorts'], gamingOptions: o => o, generalOptions: (o, d) => d, readPreset: () => 'general', writePreset: () => {} }, './ViralMomentsPanel': { default: 'viral-moments' },
+    './importPreferencesStore': { readImportPreferences: () => null }, './gamingPreset': { GAMING_PLATFORMS: ['tiktok', 'youtube_shorts'], gamingOptions: o => o, generalOptions: (o, d) => d, readPreset: () => 'general', writePreset: () => {} }, './ViralMomentsPanel': { default: 'viral-moments' }, '../clipper/ViralScanPanel': { default: 'viral-scan' },
     './UrlPreview': { default: 'url-preview', shouldSuggestFirstWindow: () => false },
     './studio.css': {}, './quick-output.css': {},
     '../settings/OutputCaptionsSetting': { OutputCaptionsSwitch: () => null },

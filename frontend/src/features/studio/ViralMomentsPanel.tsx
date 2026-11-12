@@ -9,11 +9,12 @@ import type { ImportOptions } from './types'
 export type ViralMoment = {
   start: number; end: number; peak_time: number; heat: number
   reason?: { summary?: string; details?: string[] }
+  hook?: { kejadian: string; kenapa_menarik: string; hook: string; judul: string; yakin: string }
   transcript?: { t: number; text: string }[]
 }
 export type ViralResult = {
   video_id: string; url: string; title: string; channel: string; duration_s: number
-  heatmap_available: boolean; source: string; moments: ViralMoment[]
+  heatmap_available: boolean; source: string; moments: ViralMoment[]; hook_error?: string
 }
 
 export function clock(sec: number): string {
@@ -28,10 +29,11 @@ export function momentForm(result: ViralResult, moment: ViralMoment, options: Im
   body.append('url', result.url)
   body.append('clip_start', String(Math.max(0, moment.start)))
   body.append('clip_end', String(moment.end))
-  body.append('name', `${result.title.slice(0, 80)} · ${clock(moment.start)}`)
+  body.append('name', moment.hook?.judul ? moment.hook.judul.slice(0, 120) : `${result.title.slice(0, 80)} · ${clock(moment.start)}`)
   body.append('goal', options.goal === 'auto' ? 'highlight' : options.goal)
   body.append('language', options.language)
-  body.append('instruction', options.instruction)
+  const hookText = moment.hook ? `Hook pembuka: "${moment.hook.hook}". Kejadian: ${moment.hook.kejadian}` : ''
+  body.append('instruction', [options.instruction, hookText].filter(Boolean).join(' ').slice(0, 1000))
   platforms.forEach(platform => body.append('platforms', platform))
   body.append('auto_start', 'true')
   body.append('portrait_style', options.portrait_style || 'auto')
@@ -51,6 +53,7 @@ export default function ViralMomentsPanel({ url, browser, platforms, options, di
   const [result, setResult] = useState<ViralResult | null>(null)
   const [picked, setPicked] = useState<number[]>([])
   const [created, setCreated] = useState(0)
+  const [hooks, setHooks] = useState(false)
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
   useEffect(() => () => { if (timer.current) clearTimeout(timer.current) }, [])
   useEffect(() => { setState('idle'); setResult(null); setPicked([]); setCreated(0) }, [url])
@@ -69,7 +72,7 @@ export default function ViralMomentsPanel({ url, browser, platforms, options, di
   }
   const find = async () => {
     setState('running'); setMessage(''); setResult(null); setCreated(0)
-    try { poll((await studioApi.viralStart(url, browser || undefined)).job_id) }
+    try { poll((await studioApi.viralStart(url, browser || undefined, hooks)).job_id) }
     catch (error) { setState('failed'); setMessage(t(errorText(error))) }
   }
   const create = async () => {
@@ -91,12 +94,16 @@ export default function ViralMomentsPanel({ url, browser, platforms, options, di
   return <div className="ac-viral">
     <div className="ac-viral-head">
       <div><strong>{t('找爆点')}</strong><small>{t('从热力图、直播弹幕和评论里的时间戳找出最精彩的片段，只下载这些片段。')}</small></div>
-      <Btn size="sm" disabled={disabled || state === 'running' || state === 'creating'} loading={state === 'running'} onClick={() => void find()}>{result ? t('再找一次') : t('找爆点')}</Btn>
+      <div className="ac-viral-actions">
+        <label className="ac-viral-hooks"><input type="checkbox" checked={hooks} disabled={state === 'running'} onChange={e => setHooks(e.target.checked)} />{t('Hook & judul oleh Claude')}</label>
+        <Btn size="sm" disabled={disabled || state === 'running' || state === 'creating'} loading={state === 'running'} onClick={() => void find()}>{result ? t('再找一次') : t('找爆点')}</Btn>
+      </div>
     </div>
     {state === 'running' && <p className="studio-muted" role="status">{message || t('正在寻找爆点…')}</p>}
     {state === 'failed' && <p className="ac-viral-error" role="alert">{t('查找爆点失败')}{message ? `: ${message}` : ''}</p>}
     {result && <>
       <p className="studio-muted">{result.title} · {t('来源：{{source}}', { source: result.source })}</p>
+      {result.hook_error && <p className="ac-viral-error">{t('Hook gagal dibuat: {{error}}', { error: result.hook_error })}</p>}
       {result.moments.length === 0 && <p className="studio-muted">{t('没有找到明显的爆点。')}</p>}
       <ul className="ac-viral-list">
         {result.moments.map((moment, index) => <li key={`${moment.start}-${moment.end}`} className={picked.includes(index) ? 'is-picked' : ''}>
@@ -105,6 +112,7 @@ export default function ViralMomentsPanel({ url, browser, platforms, options, di
             <span className="ac-viral-time">{clock(moment.start)}–{clock(moment.end)}</span>
             <span className="ac-viral-reason">{moment.reason?.summary || ''}</span>
           </label>
+          {moment.hook && <div className="ac-viral-hook"><b>{moment.hook.judul}</b><span>“{moment.hook.hook}”</span><small>{moment.hook.kejadian} {moment.hook.kenapa_menarik} · {t('yakin')}: {moment.hook.yakin}</small></div>}
           {!!moment.transcript?.length && <details><summary>{t('查看台词')}</summary><p>{moment.transcript.map(line => line.text).join(' ')}</p></details>}
         </li>)}
       </ul>

@@ -60,7 +60,7 @@ export interface Packaging {
   tags: { at: number; text: string }[]; tags_enabled: boolean; captions_enabled?: boolean
   highlights: { at: number; text: string }[]
   burned_captions: boolean; fallback: boolean
-  style?: 'classic' | 'boxed' | 'spotlight' | 'pop' | 'cinematic' | null
+  style?: 'classic' | 'boxed' | 'spotlight' | 'pop' | 'cinematic' | 'clipper' | null
   mood?: 'calm' | 'serious' | 'bold' | 'warm' | 'playful' | null
   palette?: 'azure' | 'amber' | 'coral' | 'mint' | 'lemon' | 'rose' | 'lilac' | null
 }

@@ -23,10 +23,12 @@ import { useTheme } from '../context/ThemeContext'
 import { Btn, Icon, Row, Section, Segmented } from '../ui'
 import FlagOverrides, { flagOverridesVisible } from '../features/settings/FlagOverrides'
 import ImportPreferenceSettings from '../features/settings/ImportPreferenceSettings'
+import ClipperSettings from '../features/clipper/ClipperSettings'
 
-type SectionKey = 'ai' | 'publish' | 'app' | 'feedback'
+type SectionKey = 'ai' | 'clipper' | 'publish' | 'app' | 'feedback'
 const NAV: Array<{ key: SectionKey; label: string }> = [
   { key: 'ai', get label() { return t('settings.providers.nav') } },
+  { key: 'clipper', get label() { return 'Clipper' } },
   { key: 'publish', get label() { return t("发布") } },
   { key: 'app', get label() { return t("应用") } },
   { key: 'feedback', get label() { return t("反馈") } },
@@ -90,6 +92,8 @@ const SettingsPage: React.FC = () => {
           {active === 'app' && (
             <AppSection analyticsOn={analyticsOn} onAnalyticsChange={(on) => { setAnalyticsEnabled(on); setAnalyticsOn(on) }} />
           )}
+
+          {active === 'clipper' && <ClipperSettings />}
 
           {active === 'publish' && <PublishSettings />}
 

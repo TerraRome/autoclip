@@ -41,7 +41,7 @@ export const studioApi = {
   }, { ...workflow.context(pid), trigger, ...draftProperties(draft) }),
   readiness: (): Promise<ImportReadiness> => api.get('/studio/readiness'),
   /** Fork (Clipper merge): start / poll the viral-moment finder for one YouTube link. */
-  viralStart: (url: string, browser?: string): Promise<{ job_id: string }> => api.post('/studio/viral-moments', { url, browser }),
+  viralStart: (url: string, browser?: string, hooks = false): Promise<{ job_id: string }> => api.post('/studio/viral-moments', { url, browser, hooks }),
   viralStatus: (jobId: string): Promise<{ status: 'running' | 'done' | 'failed'; message?: string; error?: string; result: ViralResult | null }> => api.get(`/studio/viral-moments/${jobId}`),
   /** F4: info-only URL probe before download (10s). */
   inspectUrl: (body: { url: string; browser?: string; analysis_mode?: string }): Promise<{
