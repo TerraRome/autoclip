@@ -188,6 +188,29 @@ async def inspect_url(body: InspectUrlBody):
 
 
 
+class ViralMomentsBody(BaseModel):
+    url: str = Field(min_length=8, max_length=500)
+    browser: Optional[Literal['chrome', 'edge', 'firefox', 'safari']] = None
+
+
+@router.post('/viral-moments')
+def viral_moments_start(body: ViralMomentsBody):
+    """Fork (Clipper merge): start finding the viral moments of a YouTube video; poll the job."""
+    from backend.services.clipper import finder
+    if not finder.extract_video_id(body.url):
+        raise HTTPException(422, 'Hanya link video YouTube yang didukung')
+    return {'job_id': finder.start_job(body.url, body.browser)}
+
+
+@router.get('/viral-moments/{job_id}')
+def viral_moments_status(job_id: str):
+    from backend.services.clipper import finder
+    job = finder.job_status(job_id)
+    if job is None:
+        raise HTTPException(404, 'Pencarian tidak ditemukan')
+    return job
+
+
 @router.get('/capabilities')
 def capabilities():
     return {'visual_analysis': intelligence.ready(), 'visual_model': intelligence.visual_config()[2], 'languages': ['source', 'zh', 'en', 'ja']}
@@ -235,7 +258,7 @@ async def import_visual(
     instruction: str = Form('', max_length=1000),
     platforms: list[str] = Form(['douyin']),
     auto_start: bool = Form(False),
-    portrait_style: Literal['auto', 'interview', 'podcast'] = Form('auto'),
+    portrait_style: Literal['auto', 'interview', 'podcast', 'streamer'] = Form('auto'),
     html_template: Optional[Literal['editorial', 'street', 'news', 'cinema', 'classic']] = Form(None),
     recommended_template: Optional[Literal['editorial', 'street', 'classic']] = Form(None),
     brand_outro_enabled: bool = Form(True),
@@ -246,6 +269,8 @@ async def import_visual(
     video: Optional[UploadFile] = File(None),
     source_window_start: Optional[float] = Form(None, ge=0),
     source_window_end: Optional[float] = Form(None, gt=0),
+    clip_start: Optional[float] = Form(None, ge=0),
+    clip_end: Optional[float] = Form(None, gt=0),
     features: str = Form(''),
     db: Session = Depends(get_db),
 ):
@@ -290,7 +315,11 @@ async def import_visual(
                 'start': float(source_window_start or 0),
                 'end': float(source_window_end),
             }
+        clip_range = None
+        if clip_end is not None and url:
+            clip_range = {'start': float(clip_start or 0), 'end': float(clip_end)}
         prefs = ImportOptions(
+            clip_range=clip_range,
             goal=goal, language=language, aspect=aspect, duration=duration, instruction=instruction,
             platforms=platforms, auto_start=auto_start, portrait_style=portrait_style, html_template=html_template,
             recommended_template=recommended_template,

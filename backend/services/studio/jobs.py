@@ -480,6 +480,11 @@ def download(project_id, url, browser, import_options=None):
     options = {'format': 'bestvideo[height<=1080]+bestaudio/best[height<=1080]', 'outtmpl': str(folder / 'input.%(ext)s'), 'merge_output_format': 'mp4', 'noplaylist': True, 'quiet': True, 'ffmpeg_location': get_ffmpeg_path(), 'socket_timeout': 30, 'retries': 2, 'progress_hooks': [progress], 'postprocessor_hooks': [progress], **ytdlp_js_runtimes()}
     if browser:
         options['cookiesfrombrowser'] = (browser,)
+    clip_range = _clip_range(import_options)
+    if clip_range:
+        # Fork (Clipper merge): one viral moment of a long stream, not the whole stream.
+        from yt_dlp.utils import download_range_func
+        options.update(download_ranges=download_range_func(None, [clip_range]), force_keyframes_at_cuts=True)
     from backend.utils.download_recovery import download_with_recovery
     download_with_recovery(url, {**options, 'writeinfojson': True})
     # Public listing text only: packaging checks nameplate names against it instead of guessing.
@@ -494,7 +499,8 @@ def download(project_id, url, browser, import_options=None):
     height = _ensure_source_resolution(url, options, info, folder)
     if height:
         meta['source_height'] = height
-    if _fetch_platform_subtitles(url, options, info, folder):
+    # Platform subtitles are timed on the full video; a clipped range transcribes its own audio.
+    if not clip_range and _fetch_platform_subtitles(url, options, info, folder):
         meta['subtitle_source'] = 'platform'
     store.change(project_id, lambda data: data.update(source_meta=meta))
     from backend.core.database import SessionLocal
@@ -516,6 +522,18 @@ def download(project_id, url, browser, import_options=None):
         p.video_path = str(video)
         p.thumbnail = thumbnail
         db.commit()
+
+
+def _clip_range(import_options):
+    """(start, end) seconds to download from a link, or None for the whole video."""
+    if import_options is None:
+        return None
+    window = getattr(import_options, 'clip_range', None) if not isinstance(import_options, dict) else import_options.get('clip_range')
+    if not window:
+        return None
+    start = float(window.get('start', 0) if isinstance(window, dict) else window.start)
+    end = float(window.get('end') if isinstance(window, dict) else window.end)
+    return (max(0.0, start), end) if end > start else None
 
 
 MIN_SOURCE_HEIGHT = 720
@@ -1075,6 +1093,32 @@ def _speaker_framing(value, video, *, window=None, wait_sec=120, scans=None, cue
 INTERVIEW_WINDOW = (1080, 810)  # 4:3 speaker window of the interview template
 
 
+def _portrait_style(project_id):
+    return (store.read(project_id).get('generation') or {}).get('portrait_style', 'auto')
+
+
+def _streamer_split(value, video, cache):
+    """Fork (Clipper merge): facecam-on-top layout for every scene, or None to keep speaker framing."""
+    key = ('streamer', tuple((scene['start'], scene['end']) for scene in value['scenes']))
+    if key not in cache:
+        try:
+            from backend.services.clipper import streamer_layout
+            from backend.services.studio import framing
+            deadline = monotonic() + 120
+            while not framing.is_installed() and framing.get_status().get('status') == 'installing' and monotonic() < deadline:
+                sleep(2)
+            cache[key] = streamer_layout.plan(video, value['scenes'])
+        except Exception as error:  # noqa: BLE001 - fall back to the normal framing
+            logger.warning('Streamer layout failed: %s', type(error).__name__)
+            cache[key] = None
+    split = cache[key]
+    if not split:
+        return None
+    scenes = [{**scene, 'split': split, 'crop_x': None, 'crop_track': None, 'framing_source': 'auto', 'framing_adjusted': False}
+              for scene in value['scenes']]
+    return {**value, 'scenes': scenes, 'layout': 'crop'}
+
+
 def _project_strategy(project_id, strategy_id):
     """Visual template is a preference; platform language, dimensions and limits stay intact."""
     from dataclasses import replace
@@ -1120,6 +1164,10 @@ def _apply_framing(project_id, value, strategy_id, video, burned, cache, portrai
     if burned:
         plain = [{**scene, 'crop_x': None, 'crop_track': None, 'framing_source': None, 'framing_adjusted': False} for scene in value['scenes']]
         return {**value, 'scenes': plain, 'layout': fallback_layout}, 'full_frame_captions'
+    if _portrait_style(project_id) == 'streamer':
+        streamed = _streamer_split(value, video, cache)
+        if streamed is not None:
+            return streamed, 'streamer_split'
     window = None if portrait_crop else (INTERVIEW_WINDOW if interview else None)
     key = (tuple((scene['start'], scene['end']) for scene in value['scenes']), window)
     if 'cues' not in cache:

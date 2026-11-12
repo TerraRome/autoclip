@@ -26,6 +26,16 @@ class CropPoint(BaseModel):
     ease: float = Field(default=0, ge=0, le=2)
 
 
+class SplitLayout(BaseModel):
+    """Fork (Clipper merge): facecam on top, gameplay below. Crops are [w, h, x, y] in source pixels."""
+    model_config = ConfigDict(extra='forbid', allow_inf_nan=False)
+    cam: list[int] = Field(min_length=4, max_length=4)
+    game: list[int] = Field(min_length=4, max_length=4)
+    top: float = Field(ge=0.15, le=0.6)
+    source: list[int] = Field(min_length=2, max_length=2)
+    kind: Literal['face', 'anime'] = 'face'
+
+
 class Scene(BaseModel):
     framing_source: Literal["auto", "manual"] | None = None
     framing_adjusted: bool = False
@@ -39,6 +49,8 @@ class Scene(BaseModel):
     crop_x: float | None = Field(default=None, ge=0, le=1, allow_inf_nan=False)
     # Speaker-following framing: piecewise-constant crop_x over the scene. Empty/None = static crop_x.
     crop_track: list[CropPoint] | None = Field(default=None, max_length=400)
+    # Streamer layout (portrait_style 'streamer'); when set it replaces the crop for this scene.
+    split: SplitLayout | None = None
 
     @model_validator(mode='after')
     def interval(self):
@@ -334,11 +346,13 @@ class ImportOptions(BaseModel):
     instruction: str = Field(default='', max_length=1000)
     platforms: list[str] = Field(default_factory=lambda: ['douyin'], min_length=1, max_length=8)
     auto_start: bool = False
-    portrait_style: Literal['auto', 'interview', 'podcast'] = 'auto'
+    portrait_style: Literal['auto', 'interview', 'podcast', 'streamer'] = 'auto'
     html_template: Literal['editorial', 'street', 'news', 'cinema', 'classic'] | None = None
     recommended_template: Literal['editorial', 'street', 'classic'] | None = None
     branding: BrandingOptions = Field(default_factory=BrandingOptions)
     source_window: SourceWindow | None = None
+    # Fork (Clipper merge): download only this range of a link, e.g. one viral moment of a long stream.
+    clip_range: SourceWindow | None = None
 
     @model_validator(mode='after')
     def unique_platforms(self):

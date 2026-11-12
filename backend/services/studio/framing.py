@@ -437,6 +437,9 @@ def fit_spans(scene: Scene) -> list[tuple[float, float]]:
 def layout_filter(scene: Scene, fallback: float, w: int, h: int) -> str:
     """The `[0:v]…[base]` chain for a cropped scene, switching to a blurred fit on `fit` shots."""
     from backend.services.publish_export import blurred_backdrop
+    if scene.split is not None:
+        from backend.services.clipper.streamer_layout import filter_chain
+        return filter_chain(scene.split.model_dump(), w, h)
     cropped = (f"scale={w}:{h}:force_original_aspect_ratio=increase,"
                f"crop={w}:{h}:x='(iw-ow)*{crop_expression(scene, fallback)}':y=(ih-oh)/2,setsar=1")
     spans = fit_spans(scene)
