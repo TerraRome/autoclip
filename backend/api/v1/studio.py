@@ -191,6 +191,69 @@ async def inspect_url(body: InspectUrlBody):
 class ViralMomentsBody(BaseModel):
     url: str = Field(min_length=8, max_length=500)
     browser: Optional[Literal['chrome', 'edge', 'firefox', 'safari']] = None
+    hooks: bool = False
+
+
+class ClipperSettingsBody(BaseModel):
+    youtube_api_key: Optional[str] = Field(None, max_length=200)
+    channels: Optional[str] = Field(None, max_length=20000)
+    region: Optional[str] = Field(None, max_length=4)
+    category: Optional[str] = Field(None, max_length=4)
+    whisper_cpp_enabled: Optional[bool] = None
+    whisper_cpp_binary: Optional[str] = Field(None, max_length=1000)
+    whisper_cpp_model: Optional[str] = Field(None, max_length=1000)
+    whisper_language: Optional[str] = Field(None, max_length=8)
+    kamus: Optional[str] = Field(None, max_length=50000)
+    claude_model: Optional[Literal['sonnet', 'opus', 'haiku']] = None
+    claude_bridge: Optional[bool] = None
+
+
+class ViralScanBody(BaseModel):
+    trending: bool = True
+    use_channels: bool = True
+    max_age_days: float = Field(7, gt=0, le=60)
+    min_duration: int = Field(600, ge=0, le=36000)
+
+
+def _clipper_status():
+    from backend.services.clipper import claude_bridge, settings, whisper_cpp
+    data = settings.load()
+    cfg = whisper_cpp.paths(data)
+    return {
+        'settings': settings.public(data),
+        'claude': claude_bridge.status(),
+        'whisper_cpp': {'ready': cfg is not None, 'vad': bool(cfg and cfg.get('vad_bin') and cfg.get('vad_model'))},
+    }
+
+
+@router.get('/clipper/settings')
+def clipper_settings_get():
+    """Fork (Clipper merge): YouTube API key, whisper.cpp, kamus and Claude CLI status."""
+    return _clipper_status()
+
+
+@router.post('/clipper/settings')
+def clipper_settings_save(body: ClipperSettingsBody):
+    from backend.services.clipper import claude_bridge, settings
+    settings.save({k: v for k, v in body.model_dump().items() if v is not None})
+    claude_bridge.start()
+    return _clipper_status()
+
+
+@router.post('/clipper/scan')
+def clipper_scan(body: ViralScanBody):
+    """Rank viral videos from the saved channels and/or trending (YouTube Data API)."""
+    from backend.services.clipper import scanner, settings
+    data = settings.load()
+    try:
+        return scanner.scan(channels=(data.get('channels') or '').splitlines() if body.use_channels else None,
+                            trending=body.trending, region=data.get('region') or 'ID',
+                            category=data.get('category') or None, max_age_days=body.max_age_days,
+                            min_duration=body.min_duration)
+    except ValueError as error:
+        raise HTTPException(422, str(error)) from None
+    except Exception as error:  # noqa: BLE001 - network / API errors are shown as-is
+        raise HTTPException(502, str(error).splitlines()[0][:300] if str(error) else type(error).__name__) from None
 
 
 @router.post('/viral-moments')
@@ -199,7 +262,7 @@ def viral_moments_start(body: ViralMomentsBody):
     from backend.services.clipper import finder
     if not finder.extract_video_id(body.url):
         raise HTTPException(422, 'Hanya link video YouTube yang didukung')
-    return {'job_id': finder.start_job(body.url, body.browser)}
+    return {'job_id': finder.start_job(body.url, body.browser, hooks=body.hooks)}
 
 
 @router.get('/viral-moments/{job_id}')

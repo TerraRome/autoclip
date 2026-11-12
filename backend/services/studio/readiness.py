@@ -100,6 +100,9 @@ def ensure_analysis_usable() -> None:
 def _transcription(settings: ai_models.ModelSettings) -> dict:
     choice = settings.transcription or ai_models.Transcription()
     if choice.provider == 'whisper_local':
+        from backend.services.clipper import whisper_cpp
+        if whisper_cpp.paths() is not None:  # Fork (Clipper merge): whisper.cpp is configured
+            return _check(True, 'whisper_installed', label='whisper.cpp')
         from backend.services import whisper_runtime
         model = choice.model or 'base'
         label = f'本地 {model}'

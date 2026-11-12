@@ -119,6 +119,7 @@ Style: CaptionBox,{FONT},58,{WHITE},{WHITE},{INK_SOFT},{INK_SOFT},1,0,0,0,100,10
 Style: TagPill,{FONT},48,{ON_ACCENT},{ON_ACCENT},{ACCENT},{ACCENT},1,0,0,0,100,100,2,0,3,14,0,5,40,40,0,1
 Style: Cine,{FONT},64,{WHITE},{WHITE},&H00000000,&H00000000,1,0,0,0,100,100,2,0,1,0,0,2,60,60,0,1
 Style: CineGlow,{FONT},64,{ACCENT},{ACCENT},{ACCENT},&H00000000,1,0,0,0,100,100,2,0,1,3,0,2,60,60,0,1
+Style: Clipper,{FONT},78,&H00FFFFFF,&H00FFFFFF,&H00000000,&H90000000,1,0,0,0,100,100,0,0,1,7,3,5,120,120,0,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -233,6 +234,11 @@ def scene_ass(packaging: Packaging, scenes: list[Scene], index: int, word_timing
                     add_caption(1, s, e, 'Original', f'{{\\an8\\pos(540,{WIN_Y + WIN_H + 34})\\fad(60,60)}}{_esc_lines(original)}')
             continue
         highlights = {h.text.lower() for h in packaging.highlights if cue.start <= h.at < cue.end}
+        if (style == 'clipper' or source_scene.split is not None) and packaging.audience_language != 'zh':
+            from backend.services.clipper.captions import clipper_caption_events
+            for s, e, text in clipper_caption_events(spoken, start, end, highlights, source_scene.split):
+                add_caption(2, s, e, 'Clipper', text)
+            continue
         if style == 'boxed' or packaging.audience_language == 'zh':
             caption_style, size = {'boxed': ('CaptionBox', 58), 'cinematic': ('Cine', 64)}.get(style, ('Words', 82))
             for s, e, text, _ in timed_screens(spoken, start, end, _limit(size) / 0.95):

@@ -141,7 +141,7 @@ class Packaging(BaseModel):
     burned_captions: bool = False
     fallback: bool = False
     # Visual style inside the classic templates; None = the golden default (classic / pop).
-    style: Literal['classic', 'boxed', 'spotlight', 'pop', 'cinematic'] | None = None
+    style: Literal['classic', 'boxed', 'spotlight', 'pop', 'cinematic', 'clipper'] | None = None
     # Content mood chosen by the model; it picks the palette and style (packaging.choose_look).
     mood: Literal['calm', 'serious', 'bold', 'warm', 'playful'] | None = None
     palette: Literal['azure', 'amber', 'coral', 'mint', 'lemon', 'rose', 'lilac'] | None = None

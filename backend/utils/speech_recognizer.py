@@ -1115,6 +1115,14 @@ def generate_subtitle_for_video(video_path: Path, output_path: Optional[Path] = 
     from backend.services.ai_model_settings import load as load_model_settings
     model_settings = load_model_settings()
     selection = model_settings.transcription if model_settings else None
+    # Fork (Clipper merge): whisper.cpp on the GPU replaces faster-whisper when configured.
+    if method in ('auto', 'whisper_local') and (selection is None or selection.provider == 'whisper_local'):
+        from backend.services.clipper import whisper_cpp
+        if whisper_cpp.paths() is not None:
+            try:
+                return whisper_cpp.transcribe(Path(video_path), output_path, language)
+            except Exception as error:  # noqa: BLE001 - fall back to faster-whisper below
+                logger.warning('whisper.cpp failed, using faster-whisper: %s', str(error)[:200])
     if method == 'sensevoice_local' or method == 'auto' and selection and selection.provider == 'sensevoice_local':
         from backend.services.sensevoice_runtime import transcribe
         return transcribe(Path(video_path), output_path, language, timeout)

@@ -69,6 +69,7 @@ def find_moments(
     clip_min: float = 30,
     clip_max: float = 90,
     comments: int = 300,
+    hooks: bool = False,
     progress: Callable[[str], None] = lambda message: None,
 ) -> dict:
     vid = extract_video_id(url)
@@ -136,7 +137,22 @@ def find_moments(
             # setup lelucon biasanya diucapkan sebelum puncaknya
             m["transcript"] = [{"t": t, "text": txt} for t, txt in excerpt(lines, m["start"] - 45, m["end"] + 10)][:60]
 
+    hook_error = ""
+    if hooks and moments:
+        progress("Meminta hook & judul ke Claude…")
+        try:
+            from .hook import generate_hooks, sample_chat
+            payload = [{**m, "transcript": [(x["t"], x["text"]) for x in m.get("transcript", [])],
+                        "chat": sample_chat(chat, m["start"], m["end"])} for m in moments]
+            for h in generate_hooks(info.get("title") or vid, info.get("channel") or info.get("uploader") or "", payload):
+                if 1 <= h.index <= len(moments):
+                    moments[h.index - 1]["hook"] = h.model_dump(exclude={"index"})
+        except Exception as error:  # noqa: BLE001 - moments stay usable without hooks
+            hook_error = str(error).splitlines()[0][:200] if str(error) else type(error).__name__
+            logger.warning("Hooks failed: %s", hook_error)
+
     return {
+        "hook_error": hook_error,
         "video_id": vid,
         "url": url,
         "title": info.get("title") or vid,
@@ -159,7 +175,7 @@ _lock = threading.Lock()
 JOB_TTL = 3600
 
 
-def start_job(url: str, browser: str | None = None) -> str:
+def start_job(url: str, browser: str | None = None, hooks: bool = False) -> str:
     job_id = uuid.uuid4().hex[:12]
     now = time.time()
     with _lock:
@@ -173,7 +189,7 @@ def start_job(url: str, browser: str | None = None) -> str:
 
     def run():
         try:
-            result = find_moments(url, browser=browser, progress=lambda message: update(message=message))
+            result = find_moments(url, browser=browser, hooks=hooks, progress=lambda message: update(message=message))
             update(status="done", result=result, message="Selesai")
         except Exception as error:  # noqa: BLE001 - reported to the UI
             text = str(error).splitlines()[0][:300] if str(error) else type(error).__name__

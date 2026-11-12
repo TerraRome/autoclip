@@ -137,6 +137,12 @@ def create_app(mode: str = "web") -> FastAPI:
             logger.info("Web 模式：使用 Redis/Celery")
         
         logger.info("WebSocket 网关服务已禁用，使用新的简化进度系统")
+        try:
+            # Fork (Clipper merge): OpenAI-compatible bridge for `claude -p` (Claude subscription)
+            from backend.services.clipper import claude_bridge
+            claude_bridge.start()
+        except Exception:
+            logger.exception("Claude CLI bridge failed to start")
     
     # 关闭事件
     @app.on_event("shutdown")
