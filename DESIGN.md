@@ -1,5 +1,16 @@
 # Design System — AutoClip
 
+> **Fork override (TerraRome/autoclip) · "Studio Night"**
+> This fork targets gaming / streamer clippers. It keeps every layout, spacing and type rule below,
+> and changes only the color tokens in `frontend/src/index.css`:
+> - Dark-first: the first launch opens in dark; light is one click away in the header.
+> - Neutrals are cool graphite (`--bg #0F0F12`, `--card #18181C`) instead of warm grey.
+> - One ember accent replaces the blue: `#FF6B35` dark / `#E8541E` light. Primary CTA buttons are filled with it;
+>   selected cards get a faint accent tint (`--sel`). Everything else stays monochrome.
+> - The "Clip" in the wordmark uses the accent.
+> When the rules below mention the blue accent or ink CTA, read them as the ember accent.
+
+
 > AutoClip 的设计唯一标准。做任何 UI/视觉决策前先读这里。
 > 方向：**克制专业 / Calm Premium**（参考 Dia Browser）。安静、精确、留白多、几乎全单色，
 > 只用一个克制的蓝做强调。给"认真做内容的人"用，不是玩具风、不是冷黑科技风。

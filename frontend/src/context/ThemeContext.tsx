@@ -15,7 +15,8 @@ const ThemeContext = createContext<ThemeContextValue | null>(null)
 function getInitialTheme(): Theme {
   const savedTheme = localStorage.getItem(THEME_STORAGE_KEY)
   if (savedTheme === 'light' || savedTheme === 'dark') return savedTheme
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  // Fork: Studio Night is dark-first; light stays one click away in the header.
+  return 'dark'
 }
 
 export const ThemeProvider: React.FC<React.PropsWithChildren> = ({ children }) => {

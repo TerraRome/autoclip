@@ -18,7 +18,7 @@ export default function LanguageSelect() {
         void setLanguage(value)
       }}
       suffixIcon={<GlobalOutlined />}
-      style={{ width: 150, maxWidth: '38vw' }}
+      style={{ width: 176, maxWidth: '40vw' }}
       options={[{ value: 'system', label: t('跟随系统') }, ...languages]}
       popupMatchSelectWidth={200}
     />

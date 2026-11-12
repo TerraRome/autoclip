@@ -93,7 +93,8 @@ export function resolvePlatforms(
   remembered: string[] | null = readRememberedPlatforms(),
   successHistory: boolean = hasSuccessHistory(),
 ): { platforms: string[]; source: PlatformSource } {
-  if (!enabled) return { platforms: ['douyin'], source: 'user' }
+  // Fork: without the remember flag, still start from the locale default (TikTok outside zh).
+  if (!enabled) return { platforms: platformsForLocale(locale, successHistory), source: 'user' }
   if (remembered?.length) return { platforms: knownPlatforms(remembered), source: 'remembered' }
   return { platforms: platformsForLocale(locale, successHistory), source: 'locale' }
 }

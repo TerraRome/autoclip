@@ -54,7 +54,7 @@ const Header: React.FC = () => {
             letterSpacing: '0.3px',
           }}
         >
-          Auto<em style={{ fontStyle: 'italic' }}>Clip</em>
+          Auto<em className="ac-wordmark-accent" style={{ fontStyle: 'italic' }}>Clip</em>
         </span>
       </div>
 

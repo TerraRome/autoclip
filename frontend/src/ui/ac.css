@@ -15,7 +15,7 @@
   transition: color var(--ac-t-micro, 100ms) ease-out;
 }
 .ac-back:hover { color: var(--ac-ink); }
-.ac-title { margin: 10px 0 0; font-size: 20px; font-weight: 600; line-height: 1.3; color: var(--ac-ink); letter-spacing: -0.01em; }
+.ac-title { margin: 10px 0 0; font-size: 24px; font-weight: 600; line-height: 1.3; color: var(--ac-ink); letter-spacing: -0.01em; }
 .ac-meta { margin-top: 8px; color: var(--ac-muted); font-size: 12.5px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 .ac-meta .ac-mono { font-family: var(--ac-font-mono); }
 .ac-meta .dot::before { content: "·"; margin: 0 2px; }
@@ -38,7 +38,7 @@
   transition: background var(--ac-t-short, 200ms) ease-out, color var(--ac-t-short, 200ms) ease-out, box-shadow var(--ac-t-short, 200ms) ease-out;
 }
 .ac-seg button:hover { color: var(--ac-ink); }
-.ac-seg button[aria-pressed="true"] { background: var(--ac-card); color: var(--ac-ink); box-shadow: 0 1px 2px rgba(26,26,25,.06); }
+.ac-seg button[aria-pressed="true"] { background: var(--ac-card); color: var(--ac-ink); box-shadow: 0 0 0 1px var(--ac-line), 0 1px 2px rgba(22,22,26,.08); font-weight: 500; }
 .ac-seg--sm button { height: 24px; padding: 0 11px; font-size: 12px; }
 .ac-seg button:disabled { cursor: default; opacity: .5; }
 
@@ -615,3 +615,8 @@ details.ac-provider-model-block[open] > summary.ac-provider-model-group::before 
 .ac-provider-model-off[open] > summary::after { transform: rotate(-135deg) translateY(-1px); }
 .ac-provider-model-off > summary .count { font-family: var(--ac-font-mono); color: var(--ac-muted); }
 .ac-provider-model-off[open] > .ac-provider-model-list { margin-top: 8px; }
+
+/* ===== Fork · Studio Night accents ===== */
+[data-theme="dark"] .ac-seg button[aria-pressed="true"] { background: #26262C; }
+.ac-wordmark-accent { color: var(--ac-accent); }
+.ac-preset-row small { font-size: 12px; line-height: 1.5; color: var(--ac-sub); }

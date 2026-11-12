@@ -60,6 +60,7 @@ test('T1: remembered and manual defaults stay unrestricted', () => {
   assert.deepEqual(plain(memory.resolvePlatforms(true, 'zh-CN', ['bilibili', 'xiaohongshu', 'douyin'], false).platforms), ['bilibili', 'xiaohongshu', 'douyin'])
   assert.equal(memory.resolvePlatforms(true, 'zh-CN').source, 'remembered')
   assert.deepEqual(plain(memory.resolvePlatforms(false, 'zh-CN', null, false)), { platforms: ['douyin'], source: 'user' })
+  assert.deepEqual(plain(memory.resolvePlatforms(false, 'id-ID', null, false)), { platforms: ['tiktok'], source: 'user' })
 })
 
 test('T1: reuse stash carries platforms and source meta once', () => {

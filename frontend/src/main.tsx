@@ -89,7 +89,7 @@ function ThemedApp() {
       algorithm: isDark ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
       token: {
         // Calm Premium tokens — see DESIGN.md
-        colorPrimary: isDark ? '#5A8BFF' : '#2D6BFF',
+        colorPrimary: isDark ? '#FF6B35' : '#E8541E',
         colorText: isDark ? '#ECEAE6' : '#1A1A19',
         colorTextSecondary: isDark ? '#A6A29B' : '#6E6B66',
         colorBgBase: isDark ? '#19181A' : '#F6F5F3',
