@@ -11,6 +11,7 @@ import esES from 'antd/locale/es_ES'
 import ptBR from 'antd/locale/pt_BR'
 import ruRU from 'antd/locale/ru_RU'
 import frFR from 'antd/locale/fr_FR'
+import idID from 'antd/locale/id_ID'
 import { useTranslation } from 'react-i18next'
 import i18n from './i18n'
 import dayjs from 'dayjs'
@@ -22,6 +23,7 @@ import 'dayjs/locale/es'
 import 'dayjs/locale/pt-br'
 import 'dayjs/locale/ru'
 import 'dayjs/locale/fr'
+import 'dayjs/locale/id'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
@@ -49,7 +51,7 @@ dayjs.extend(relativeTime)
 dayjs.extend(timezone)
 dayjs.extend(utc)
 
-const antdLocales = { zh: zhCN, en: enUS, ja: jaJP, ko: koKR, es: esES, pt: ptBR, ru: ruRU, fr: frFR }
+const antdLocales = { id: idID, zh: zhCN, en: enUS, ja: jaJP, ko: koKR, es: esES, pt: ptBR, ru: ruRU, fr: frFR }
 const dateLocales: Record<string, string> = { zh: 'zh-cn', pt: 'pt-br' }
 const updateDateLocale = () => dayjs.locale(dateLocales[i18n.language] || i18n.language)
 updateDateLocale()

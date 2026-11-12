@@ -8,6 +8,7 @@ struct TrayLabels([MenuItem<tauri::Wry>; 6]);
 
 fn labels(language: &str) -> [&'static str; 6] {
     match language {
+        "id" => ["Tampilkan jendela", "Sembunyikan jendela", "Mulai layanan", "Hentikan layanan", "Mulai ulang layanan", "Keluar"],
         "zh" => ["显示主窗口", "隐藏主窗口", "启动后端服务", "停止后端服务", "重启后端服务", "退出应用"],
         "ja" => ["ウィンドウを表示", "ウィンドウを隠す", "サービスを開始", "サービスを停止", "サービスを再起動", "終了"],
         "ko" => ["창 표시", "창 숨기기", "서비스 시작", "서비스 중지", "서비스 다시 시작", "종료"],

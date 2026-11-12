@@ -6,7 +6,7 @@ const { runInSandbox } = require('./vm-sandbox.cjs')
 const ts = require('typescript')
 const { createInstance } = require('i18next')
 const root = path.join(__dirname, '../src/i18n')
-const langs = ['zh','en','ja','ko','es','pt','ru','fr']
+const langs = ['id','zh','en','ja','ko','es','pt','ru','fr']
 const catalogs = Object.fromEntries(langs.map(l => [l, JSON.parse(fs.readFileSync(path.join(root, 'locales', l + '.json'), 'utf8'))]))
 test('locale JSON objects have no duplicate keys', () => {
   for (const lang of langs) {
@@ -36,8 +36,10 @@ test('locale detection respects saved preference, regional variants and ordered 
   assert.equal(resolveLanguage('__proto__', ['zh-TW']), 'zh')
   assert.equal(resolveLanguage(null, ['de-DE']), 'en')
 })
-test('unavailable or corrupt storage falls back to system language', () => {
+test('unavailable or corrupt storage falls back to system language; first launch defaults to Indonesian', () => {
   assert.equal(loadResolver({getItem:()=>{throw Error('denied')}}).readPreference(), 'system')
+  assert.equal(loadResolver({getItem:()=>null}).readPreference(), 'id')
+  assert.equal(loadResolver({getItem:()=>'system'}).readPreference(), 'system')
   assert.equal(loadResolver({getItem:()=> 'unknown'}).readPreference(), 'system')
   assert.equal(loadResolver({getItem:()=> 'ko'}).readPreference(), 'ko')
 })

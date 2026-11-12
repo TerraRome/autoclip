@@ -86,6 +86,7 @@ pub struct AppQuitMenuItem(pub MenuItem<tauri::Wry>);
 #[cfg(target_os = "macos")]
 fn app_quit_label(language: &str) -> &'static str {
     match language {
+        "id" => "Keluar dari AutoClip",
         "zh" => "退出 AutoClip",
         "ja" => "AutoClip を終了",
         "ko" => "AutoClip 종료",
@@ -209,5 +210,6 @@ mod tests {
         assert_eq!(super::app_quit_label("zh"), "退出 AutoClip");
         assert_eq!(super::app_quit_label("en"), "Quit AutoClip");
         assert_eq!(super::app_quit_label("fr"), "Quitter AutoClip");
+        assert_eq!(super::app_quit_label("id"), "Keluar dari AutoClip");
     }
 }
