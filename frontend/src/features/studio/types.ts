@@ -168,7 +168,7 @@ export interface SourceWindow { start: number; end: number }
 export interface ImportOptions {
   goal: 'auto' | Goal; language: Language; aspect: Draft['aspect'] | null
   duration: number | null; instruction: string
-  portrait_style?: 'auto' | 'interview' | 'podcast'
+  portrait_style?: 'auto' | 'interview' | 'podcast' | 'streamer'
   html_template?: 'editorial' | 'street' | 'news' | 'cinema' | 'classic'
   source_window?: SourceWindow | null
 }

@@ -137,7 +137,7 @@ function render(options = {}) {
     './platformLabel': { platformLabel: id => id },
     './platformMemory': { hasSuccessHistory: () => false, readRememberedPlatforms: () => null, resolvePlatforms: () => ({ platforms: ['douyin'], source: 'user' }), samePlatforms: () => true, takeReuseImport: () => null, writeRememberedPlatforms() {} },
     './pasteStart': { claimBackgroundWhisperInstall: () => false, importUrlKind: text => { try { const u = new URL(String(text||'').trim()); if (u.protocol!=='https:') return null; const h=u.hostname.toLowerCase(); if (h==='youtu.be'||h==='youtube.com'||h.endsWith('.youtube.com')) return 'youtube'; if (h==='b23.tv'||h==='bilibili.com'||h.endsWith('.bilibili.com')) return 'bilibili'; return null } catch { return null } }, isVideoFile: () => false, shouldArmAutostart: () => false, shouldAutoStart: () => false, shouldBackgroundInstallWhisper: () => false, UNDO_MS: 3000 },
-    './importPreferencesStore': { readImportPreferences: () => null }, './gamingPreset': { GAMING_PLATFORMS: ['tiktok', 'youtube_shorts'], gamingOptions: o => o, generalOptions: (o, d) => d, readPreset: () => 'general', writePreset: () => {} },
+    './importPreferencesStore': { readImportPreferences: () => null }, './gamingPreset': { GAMING_PLATFORMS: ['tiktok', 'youtube_shorts'], gamingOptions: o => o, generalOptions: (o, d) => d, readPreset: () => 'general', writePreset: () => {} }, './ViralMomentsPanel': { default: 'viral-moments' },
     './types': { defaultImportOptions: { goal: 'auto', language: 'source', aspect: null, duration: null, instruction: '' } },
     './ImportPreferences': { default: 'preferences' },
     '../../services/api': { speechApi: {

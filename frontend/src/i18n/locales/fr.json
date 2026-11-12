@@ -2124,5 +2124,16 @@
   "游戏 / 主播": "Gaming / Streamer",
   "精彩高光 · 竖屏 9:16 · 约 60 秒 · 带字幕，默认发到 TikTok 和 YouTube Shorts。在设置里选用多模态模型，AI 就能看画面，剪得更准。": "Temps forts · vertical 9:16 · environ 60 s · avec sous-titres, pour TikTok et YouTube Shorts. Choisissez un modèle multimodal dans les Réglages pour que l’IA voie le gameplay et coupe plus précisément.",
   "游戏直播：挑选高光时刻——极限操作、大胜或翻车、主播搞笑或激动的反应、弹幕刷屏的瞬间。保留完整的铺垫和之后的反应。": "Stream de jeu : choisis les temps forts — actions décisives, grosses victoires ou échecs, réactions drôles ou survoltées du streamer, moments où le chat s’emballe. Garde toute la montée et la réaction qui suit.",
-  "画面": "Image"
+  "画面": "Image",
+  "找爆点": "Trouver les moments viraux",
+  "从热力图、直播弹幕和评论里的时间戳找出最精彩的片段，只下载这些片段。": "Trouve les meilleurs moments grâce à la carte « Les plus revus », aux pics du chat en direct et aux horodatages des commentaires. Seuls ces passages sont téléchargés.",
+  "正在寻找爆点…": "Recherche des moments viraux…",
+  "查找爆点失败": "Impossible de trouver les moments viraux",
+  "来源：{{source}}": "Source : {{source}}",
+  "没有找到明显的爆点。": "Aucun moment marquant trouvé.",
+  "查看台词": "Voir la transcription",
+  "再找一次": "Chercher à nouveau",
+  "已创建 {{count}} 个项目，正在后台制作。": "{{count}} projets créés, traitement en arrière-plan.",
+  "为选中的 {{count}} 个片段生成": "Créer des clips à partir de {{count}} moments sélectionnés",
+  "主播式（上镜头 + 下游戏）": "Streamer (caméra en haut + jeu en bas)"
 }

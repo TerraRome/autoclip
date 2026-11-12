@@ -727,3 +727,21 @@
     --style-gap: 12px;
   }
 }
+
+/* ===== Fork · Clipper viral finder ===== */
+.ac-viral { border: 1px solid var(--ac-line); border-radius: var(--ac-radius-sm); padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.ac-viral-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ac-viral-head strong { display: block; font-size: 13px; font-weight: 600; color: var(--ac-ink); }
+.ac-viral-head small { display: block; font-size: 12px; line-height: 1.5; color: var(--ac-sub); }
+.ac-viral-error { margin: 0; font-size: 12px; color: var(--ac-error); }
+.ac-viral-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.ac-viral-list li { border: 1px solid var(--ac-line-2); border-radius: var(--ac-radius-sm); padding: 8px 10px; }
+.ac-viral-list li.is-picked { border-color: var(--ac-accent); background: var(--ac-sel); }
+.ac-viral-list label { display: flex; align-items: baseline; gap: 10px; cursor: pointer; font-size: 13px; color: var(--ac-ink); }
+.ac-viral-list input { accent-color: var(--ac-accent); }
+.ac-viral-time { font-family: var(--ac-font-mono); font-size: 12px; white-space: nowrap; }
+.ac-viral-reason { color: var(--ac-sub); }
+.ac-viral-list details { margin: 4px 0 0 24px; font-size: 12px; color: var(--ac-sub); }
+.ac-viral-list details p { margin: 4px 0 0; line-height: 1.5; max-height: 120px; overflow: auto; }
+.ac-viral-foot { justify-content: flex-end; gap: 12px; align-items: center; }
+.ac-viral-head button { white-space: nowrap; flex-shrink: 0; }

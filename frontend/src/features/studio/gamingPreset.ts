@@ -17,7 +17,7 @@ export function gamingOptions(current: ImportOptions): ImportOptions {
     goal: 'highlight',
     aspect: 'portrait',
     duration: 60,
-    portrait_style: 'auto',
+    portrait_style: 'streamer',
     instruction: current.instruction.trim() ? current.instruction : t(GAMING_INSTRUCTION_KEY),
   }
 }

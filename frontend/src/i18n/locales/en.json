@@ -2124,5 +2124,16 @@
   "游戏 / 主播": "Gaming / Streamer",
   "精彩高光 · 竖屏 9:16 · 约 60 秒 · 带字幕，默认发到 TikTok 和 YouTube Shorts。在设置里选用多模态模型，AI 就能看画面，剪得更准。": "Highlights · 9:16 portrait · about 60 s · with captions, aimed at TikTok and YouTube Shorts. Pick a multimodal model in Settings so AI can watch the gameplay and cut more precisely.",
   "游戏直播：挑选高光时刻——极限操作、大胜或翻车、主播搞笑或激动的反应、弹幕刷屏的瞬间。保留完整的铺垫和之后的反应。": "Gaming stream: pick peak moments — clutch plays, big wins or fails, funny or hyped streamer reactions, moments when chat explodes. Keep the full build-up and the reaction after it.",
-  "画面": "Visuals"
+  "画面": "Visuals",
+  "找爆点": "Find viral moments",
+  "从热力图、直播弹幕和评论里的时间戳找出最精彩的片段，只下载这些片段。": "Finds the best moments from the \"Most replayed\" heatmap, live-chat spikes and timestamps in comments. Only those parts are downloaded.",
+  "正在寻找爆点…": "Looking for viral moments…",
+  "查找爆点失败": "Could not find viral moments",
+  "来源：{{source}}": "Source: {{source}}",
+  "没有找到明显的爆点。": "No standout moment was found.",
+  "查看台词": "Show transcript",
+  "再找一次": "Search again",
+  "已创建 {{count}} 个项目，正在后台制作。": "{{count}} projects created and processing in the background.",
+  "为选中的 {{count}} 个片段生成": "Make clips from {{count}} selected moments",
+  "主播式（上镜头 + 下游戏）": "Streamer (facecam top + gameplay bottom)"
 }

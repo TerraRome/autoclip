@@ -8,6 +8,7 @@ import { probeConfig } from './transcriptionRecovery'
 import { Draft, Workspace, RenderJob, Language, CandidateList, ImportOptions, Goal, AnalysisMode, AnalysisPreferences, SubtitleCue, FramingStatus, AutoFrameResult, PlatformStrategySummary, OutputVariant, PostCopy } from './types'
 import { noteWorkspaceCompletion } from './noticeRuntime'
 import { effectiveSubtitles } from './subtitleState'
+import type { ViralResult } from './ViralMomentsPanel'
 export type SourcePreview = { status: 'idle' | 'queued' | 'running' | 'completed' | 'failed'; version?: string; error?: string }
 export function draftProperties(draft?: Partial<Draft>): Properties {
   const packaging = draft?.packaging
@@ -39,6 +40,9 @@ export const studioApi = {
     captureBusinessEvent('studio_auto_frame_finished', safeStudioProperties({ ...props, outcome: 'completed', framing_outcome: framed ? 'framed' : 'no_detection', framed_count: framed, scene_count: result.scenes.length, fit_count: result.scenes.reduce((n,s) => n + s.fit_shots, 0) }))
   }, { ...workflow.context(pid), trigger, ...draftProperties(draft) }),
   readiness: (): Promise<ImportReadiness> => api.get('/studio/readiness'),
+  /** Fork (Clipper merge): start / poll the viral-moment finder for one YouTube link. */
+  viralStart: (url: string, browser?: string): Promise<{ job_id: string }> => api.post('/studio/viral-moments', { url, browser }),
+  viralStatus: (jobId: string): Promise<{ status: 'running' | 'done' | 'failed'; message?: string; error?: string; result: ViralResult | null }> => api.get(`/studio/viral-moments/${jobId}`),
   /** F4: info-only URL probe before download (10s). */
   inspectUrl: (body: { url: string; browser?: string; analysis_mode?: string }): Promise<{
     title?: string | null

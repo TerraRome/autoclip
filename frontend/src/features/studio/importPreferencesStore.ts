@@ -4,7 +4,7 @@ const KEY = 'autoclip.import.preferences.v1'
 const GOALS = ['auto', 'content', 'highlight', 'promo']
 const LANGUAGES = ['source', 'zh', 'en', 'ja']
 const ASPECTS = ['original', 'portrait', 'landscape']
-const STYLES = ['auto', 'interview', 'podcast']
+const STYLES = ['auto', 'interview', 'podcast', 'streamer']
 
 type StorageLike = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>
 
