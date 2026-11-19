@@ -9,7 +9,7 @@ class FormDataMock { constructor() { this.entries = [] } append(k, v) { this.ent
 const mod = loadTs(path.join(__dirname, '../src/features/studio/ViralMomentsPanel.tsx'), {
   react: { useEffect() {}, useRef: v => ({ current: v }), useState: v => [v, () => {}] },
   'react-i18next': { useTranslation: () => ({}) }, '../../i18n': { t: x => x }, '../../ui': { Btn: 'button' },
-  './api': { studioApi: {}, errorText: String }, 'react/jsx-runtime': { jsx: () => null, jsxs: () => null, Fragment: 'f' },
+  './api': { studioApi: {}, errorText: String }, './importReadiness': { submissionBlock: () => null }, 'react/jsx-runtime': { jsx: () => null, jsxs: () => null, Fragment: 'f' },
   __globals: { FormData: FormDataMock },
 })
 

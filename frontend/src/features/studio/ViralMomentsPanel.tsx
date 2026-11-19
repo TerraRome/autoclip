@@ -4,6 +4,7 @@ import { t } from '../../i18n'
 import { Btn } from '../../ui'
 import { studioApi, errorText } from './api'
 import type { ImportOptions } from './types'
+import { submissionBlock, type BlockReason } from './importReadiness'
 
 /** Fork (Clipper merge): find the viral moments of a YouTube link, then make one project per moment. */
 export type ViralMoment = {
@@ -54,6 +55,7 @@ export default function ViralMomentsPanel({ url, browser, platforms, options, di
   const [picked, setPicked] = useState<number[]>([])
   const [created, setCreated] = useState(0)
   const [hooks, setHooks] = useState(false)
+  const [blocked, setBlocked] = useState<BlockReason | null>(null)
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
   useEffect(() => () => { if (timer.current) clearTimeout(timer.current) }, [])
   useEffect(() => { setState('idle'); setResult(null); setPicked([]); setCreated(0) }, [url])
@@ -77,6 +79,11 @@ export default function ViralMomentsPanel({ url, browser, platforms, options, di
   }
   const create = async () => {
     if (!result) return
+    // Same gate as the main import button: never start projects that can only fail later.
+    setBlocked(null)
+    const report = await studioApi.readiness().catch(() => null)
+    const block = submissionBlock(report, false, true, { source: 'link' })
+    if (block && block !== 'pending') { setBlocked(block); return }
     setState('creating')
     let count = 0
     try {
@@ -116,6 +123,10 @@ export default function ViralMomentsPanel({ url, browser, platforms, options, di
           {!!moment.transcript?.length && <details><summary>{t('查看台词')}</summary><p>{moment.transcript.map(line => line.text).join(' ')}</p></details>}
         </li>)}
       </ul>
+      {blocked && <p className="ac-viral-error" role="alert">
+        {blocked === 'analysis' ? t('分析模型还没配好。连接一家 AI 服务后再生成。') : blocked === 'transcription' ? t('需要先安装本地转写') : t('导入条件还没准备好。')}{' '}
+        <a href={`#/settings?section=${blocked === 'analysis' || blocked === 'transcription' || blocked === 'visual' ? 'ai' : 'app'}`}>{t('去设置')}</a>
+      </p>}
       {result.moments.length > 0 && <div className="studio-row ac-viral-foot">
         {created > 0 && state !== 'creating' && <span className="studio-muted" role="status">{t('已创建 {{count}} 个项目，正在后台制作。', { count: created })}</span>}
         <Btn variant="cta" size="sm" disabled={disabled || !picked.length || state === 'creating'} loading={state === 'creating'} onClick={() => void create()}>{t('为选中的 {{count}} 个片段生成', { count: picked.length })}</Btn>
