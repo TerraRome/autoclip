@@ -484,6 +484,7 @@ def download(project_id, url, browser, import_options=None):
     if clip_range:
         # Fork (Clipper merge): one viral moment of a long stream, not the whole stream.
         from yt_dlp.utils import download_range_func
+        _ffmpeg_on_path()
         options.update(download_ranges=download_range_func(None, [clip_range]), force_keyframes_at_cuts=True)
     from backend.utils.download_recovery import download_with_recovery
     download_with_recovery(url, {**options, 'writeinfojson': True})
@@ -522,6 +523,21 @@ def download(project_id, url, browser, import_options=None):
         p.video_path = str(video)
         p.thumbnail = thumbnail
         db.commit()
+
+
+def _ffmpeg_on_path():
+    """yt-dlp's section downloader (FFmpegFD.available) looks for ffmpeg on PATH only and ignores
+    ffmpeg_location. The desktop app's bundled ffmpeg is not on PATH, so a clip-range download
+    failed with an ffmpeg error ("local video processing failed"). Put its folder on PATH."""
+    import os
+    from backend.utils.ffmpeg_utils import get_ffmpeg_path
+    path = get_ffmpeg_path()
+    if not (os.path.isabs(path) and os.path.exists(path)):
+        return
+    folder = os.path.dirname(path)
+    current = os.environ.get('PATH', '')
+    if folder not in current.split(os.pathsep):
+        os.environ['PATH'] = folder + os.pathsep + current
 
 
 def _clip_range(import_options):

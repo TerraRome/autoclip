@@ -155,3 +155,17 @@ def test_import_options_accept_clip_range_and_streamer():
     assert _clip_range(options) == (3000.0, 3060.0)
     assert _clip_range(options.model_dump()) == (3000.0, 3060.0)
     assert _clip_range(ImportOptions(platforms=["tiktok"])) is None
+
+
+def test_clip_range_download_puts_bundled_ffmpeg_on_path(tmp_path, monkeypatch):
+    """yt-dlp's section downloader ignores ffmpeg_location; the bundled ffmpeg must be on PATH."""
+    import os
+    from backend.services.studio import jobs
+    ffmpeg = tmp_path / "bundle" / "ffmpeg.exe"
+    ffmpeg.parent.mkdir()
+    ffmpeg.write_text("x")
+    monkeypatch.setattr("backend.utils.ffmpeg_utils.get_ffmpeg_path", lambda: str(ffmpeg))
+    monkeypatch.setenv("PATH", "/usr/bin")
+    jobs._ffmpeg_on_path()
+    jobs._ffmpeg_on_path()
+    assert os.environ["PATH"].split(os.pathsep) == [str(ffmpeg.parent), "/usr/bin"]
